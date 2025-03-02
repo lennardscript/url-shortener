@@ -2,9 +2,8 @@ package com.urlshortener.url_shortener.services;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -43,7 +42,7 @@ public class UrlServiceImpl implements UrlService {
     }
 
     // Generar una URL corta
-    String shortUrl = generateShortUrl(originalUrl);
+    String shortUrl = generateShortUrl();
 
     // Guardar la nueva URL en la base de datos
     UrlEntity urlEntity = new UrlEntity();
@@ -53,19 +52,8 @@ public class UrlServiceImpl implements UrlService {
     return shortUrl;
   }
 
-  private String generateShortUrl(String originalUrl) {
-    try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] hashByte = digest.digest(originalUrl.getBytes());
-      StringBuilder shortUrl = new StringBuilder();
-
-      for (byte b : hashByte) {
-        shortUrl.append(String.format("%02x", b));
-      }
-      return shortUrl.substring(0, 8);
-    } catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException("Error generating hash", e);
-    }
+  private String generateShortUrl() {
+    return UUID.randomUUID().toString().replace("-", "").substring(0, 8);
   }
 
   @Override
